@@ -1,17 +1,22 @@
 import PySimpleGUI as gui
 import sqlite3
+import matplotlib.pyplot as plt
+import os
+
 
 conn = sqlite3.connect('Crawler.db')
 sql = conn.cursor()
-sql.execute('''CREATE TABLE Results
-             ([generated_id] INTEGER PRIMARY KEY,[Client_Name] text, [Country_ID] integer, [Date] date)''')
+
+sql.execute('''CREATE TABLE IF NOT EXISTS Results
+           ([generated_id] INTEGER PRIMARY KEY,[Client_Name] text, [Country_ID] integer, [Date] date)''')
+sql.execute('''DELETE FROM Results''')
 
 sql.execute('''INSERT INTO Results(generated_id,Client_Name,Country_ID)
               VALUES(1,"hi",100)''')
 conn.commit()
 sql.execute('''SELECT * FROM Results ''')
 print(sql.fetchall())
-import os
+
 
 gui.change_look_and_feel('BlueMono')
 sourceSelection = ("GME", "DOGE", "AMC")
@@ -71,7 +76,7 @@ while True:
 
     if event == gui.WIN_CLOSED:
         print("Deleting...")
-        sql.execute('''DROP TABLE if exists Results''')
+        sql.execute('''DELETE FROM Results''')
         conn.close()
         quit()
 
@@ -81,16 +86,26 @@ window.close()
 print(combo) #Which stock is chosen
 print(socialMedia) #key of social media
 
-#os.system("java -classpath C:/Users/caizh/Desktop/Test.jar  MainPage") #(java -classpath -location- -mainclass-)
+#os.system("java -classpath C:/Users/caizh/Desktop/Test.jar  MainPage "+combo) #(java -classpath -location- -mainclass-)
 
 #layout = [
 #                [gui.Text("This is the 2nd layout")],
 #               [gui.Text("Data should be shown here")],
 #                [gui.Button("Close")]]
+######GUI
+labels = 'Frogs', 'Hogs', 'Dogs', 'Logs'
+sizes = [15, 30, 45, 10]
+explode = (0, 0.1, 0, 0)  # only "explode" the 2nd slice (i.e. 'Hogs')
 
+fig1, ax1 = plt.subplots()
+ax1.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%',
+        shadow=True, startangle=90)
+ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+plt.savefig('books_read.png')
+######GUI
 tab1_layout = [[gui.Text('Tab 1')],
                [gui.Text('Put your layout in here')],
-               [gui.Text('Input something')],]
+               [gui.Text('Input something')],[gui.Image(r'books_read.png')]]
 
 tab2_layout = [[gui.Text('Tab 2')]]
 tab3_layout = [[gui.Text('Tab 3')]]
@@ -110,22 +125,17 @@ layout = [[gui.TabGroup(tab_group_layout,
           [gui.Text('Make tab number'), gui.Input(key='-IN-', size=(3,1)), gui.Button('Invisible'),
            gui.Button('Visible'), gui.Button('Select')]]
 
-secondWin = gui.Window('Data Crawler Application', layout,margins=(300, 250))
-#secondWin = gui.Window("Test", layout, margins=(300, 300))
+secondWin = gui.Window('Data Crawler Application', layout)
 
 while True:
         event, values = secondWin.read()
-        if event == 'Close':
-            break
         if event == gui.WIN_CLOSED:
             print("Deleting...")
-            sql.execute('''DROP TABLE if exists Results''')
+            sql.execute('''DELETE FROM Results''')
             conn.close()
+            os.remove("books_read.png")
             exit()
 
-print("Deleting...")
-sql.execute('''DROP TABLE if exists Results''')
-conn.close()
 secondWin.close()
 
 
