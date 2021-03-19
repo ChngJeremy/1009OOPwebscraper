@@ -4,17 +4,15 @@ import matplotlib.pyplot as plt
 import os
 
 
-conn = sqlite3.connect('Crawler.db')
+conn = sqlite3.connect('crawler.db')
 sql = conn.cursor()
 
-sql.execute('''CREATE TABLE IF NOT EXISTS Results
-           ([generated_id] INTEGER PRIMARY KEY,[Client_Name] text, [Country_ID] integer, [Date] date)''')
-sql.execute('''DELETE FROM Results''')
+sql.execute('''CREATE TABLE IF NOT EXISTS stockdb
+           ([ID] INTEGER PRIMARY KEY,[Stock] text, [Source] text, [Date_created] date, [Comment] text,[Sentiment] text)''')
+sql.execute('''DELETE FROM stockdb''')
 
-sql.execute('''INSERT INTO Results(generated_id,Client_Name,Country_ID)
-              VALUES(1,"hi",100)''')
 conn.commit()
-sql.execute('''SELECT * FROM Results ''')
+sql.execute('''SELECT * FROM stockdb ''')
 print(sql.fetchall())
 
 
@@ -76,7 +74,7 @@ while True:
 
     if event == gui.WIN_CLOSED:
         print("Deleting...")
-        sql.execute('''DELETE FROM Results''')
+        sql.execute('''DELETE FROM stockdb''')
         conn.close()
         quit()
 
@@ -86,7 +84,10 @@ window.close()
 print(combo) #Which stock is chosen
 print(socialMedia) #key of social media
 
-#os.system("java -classpath C:/Users/caizh/Desktop/Test.jar  MainPage "+combo) #(java -classpath -location- -mainclass-)
+if socialMedia == 1:
+    os.system("java -classpath C:/Users/caizh/Desktop/reddit.jar  MainPage "+combo) #(java -classpath -location- -mainclass-)
+elif socialMedia == 2:
+    os.system("java -classpath C:/Users/caizh/Desktop/Twitter.jar  TwitterCrawler "+combo) #(java -classpath -location- -mainclass-)
 
 #layout = [
 #                [gui.Text("This is the 2nd layout")],
@@ -131,7 +132,7 @@ while True:
         event, values = secondWin.read()
         if event == gui.WIN_CLOSED:
             print("Deleting...")
-            sql.execute('''DELETE FROM Results''')
+            sql.execute('''DELETE FROM stockdb''')
             conn.close()
             os.remove("books_read.png")
             exit()
