@@ -88,7 +88,6 @@ socialMedia = socialMedia[0]
 
 
 if socialMedia == 1 or socialMedia == 2:
-    labels = 'Positive', 'Very Positive', 'Neutral', 'Negative', 'Very Negative'
 
     sql.execute('''SELECT * FROM stockdb''')
     sentimentTotal = sql.fetchone()
@@ -113,6 +112,8 @@ if socialMedia == 1 or socialMedia == 2:
     sql.execute('''SELECT COUNT(*) FROM stockdb WHERE Sentiment = "Super Negative"''')
     sentimentSuperNegative = sql.fetchone()
     sentimentSuperNegative = sentimentSuperNegative[0]/sentimentTotal
+    
+    labels = 'Positive', 'Very Positive', 'Neutral', 'Negative', 'Very Negative'
 
     sizes = [sentimentPositive, sentimentSuperPositive, sentimentNeutral, sentimentNegative, sentimentSuperNegative]
     explode = (0, 0, 0, 0, 0)  # only "explode" the 2nd slice (i.e. 'Hogs')
@@ -124,12 +125,14 @@ if socialMedia == 1 or socialMedia == 2:
     plt.savefig('Sentiments.png')
     sql.execute('''SELECT Comment,Sentiment FROM stockdb ORDER BY Sentiment''')
     queryComments = sql.fetchall()
+    data = []
+    for rows in queryComments:
+        data.append([rows[0],rows[1]])
     #data = [[j for j in range[20]] for i in queryComments]
 
     #15 rows 6 columns
     #data = [[row for row in queryComments[0]] for col in queryComments]
 
-    data = [[j for j in queryComments[1]] for i in queryComments[0]]
     header_list = ['Comments', 'Sentiment']
     table = gui.Table(values=data,
                         max_col_width=50,
