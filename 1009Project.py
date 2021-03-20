@@ -112,14 +112,31 @@ if socialMedia == 1 or socialMedia == 2:
     sql.execute('''SELECT COUNT(*) FROM stockdb WHERE Sentiment = "Super Negative"''')
     sentimentSuperNegative = sql.fetchone()
     sentimentSuperNegative = sentimentSuperNegative[0]/sentimentTotal
-    
-    labels = 'Positive', 'Very Positive', 'Neutral', 'Negative', 'Very Negative'
 
-    sizes = [sentimentPositive, sentimentSuperPositive, sentimentNeutral, sentimentNegative, sentimentSuperNegative]
-    explode = (0, 0, 0, 0, 0)  # only "explode" the 2nd slice (i.e. 'Hogs')
+    labels=[]
+    sizes =[]
+    if sentimentPositive != 0:
+        labels.append("Positive")
+        sizes.append(sentimentPositive)
+    if sentimentSuperPositive !=0:
+        labels.append("Super Positive")
+        sizes.append(sentimentSuperPositive)
+    if sentimentNeutral != 0:
+        labels.append("Neutral")
+        sizes.append(sentimentNeutral)
+    if sentimentNegative != 0:
+        labels.append("Negative")
+        sizes.append(sentimentNegative)
+    if sentimentSuperNegative !=0:
+        labels.append("Super Negative")
+        sizes.append(sentimentSuperNegative)
+    print(sizes)
+    print(labels)
+    #sizes = [sentimentPositive, sentimentSuperPositive, sentimentNeutral, sentimentNegative, sentimentSuperNegative]
+    #explode = (0, 0, 0, 0, 0)  # only "explode" the 2nd slice (i.e. 'Hogs')
 
     fig1, ax1 = plt.subplots()
-    ax1.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%',
+    ax1.pie(sizes, labels=labels, autopct='%1.1f%%',
             shadow=True, startangle=90)
     ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
     plt.savefig('Sentiments.png')
